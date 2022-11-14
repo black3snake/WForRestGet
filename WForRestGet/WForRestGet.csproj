@@ -289,6 +289,10 @@
     <Compile Include="Migrations\20221114061452_v3.designer.cs">
       <DependentUpon>20221114061452_v3.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20221114083640_v4.cs" />
+    <Compile Include="Migrations\20221114083640_v4.designer.cs">
+      <DependentUpon>20221114083640_v4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DataModelContextModelSnapshot.cs" />
     <Compile Include="Qtable.cs" />
     <Compile Include="SetOutOfOffice.cs" />
