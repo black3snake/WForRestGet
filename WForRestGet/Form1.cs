@@ -520,7 +520,23 @@ namespace WForRestGet
             // Join new table
             using (DataModelContext context = new DataModelContext())
             {
-                var datausers = context.Datausers.Join(context.Leaves,
+                var datausers = from d in context.Datausers
+                                join l in context.Leaves on d.LeaveId equals l.Id
+                                join a in context.Answers on d.AnswerId equals a.Id
+                                select new Qtable()
+                                {
+                                    AccountName = d.AccountName,
+                                    LeaveName = l.LeaveType,
+                                    LeaveStart = d.LeaveStart,
+                                    LeaveEnd = d.LeaveEnd,
+                                    Uid = d.FimSyncKey,
+                                    LastName = d.LastName,
+                                    FirstName = d.FirstName,
+                                    MiddleName = d.MiddleName,
+                                    AnswerName = a.AnswerType
+                                };
+                    
+                    /*context.Datausers.Join(context.Leaves, 
                     d => d.LeaveId,
                     l => l.Id,
                     (d, l) => new Qtable()
@@ -532,8 +548,9 @@ namespace WForRestGet
                         Uid = d.FimSyncKey,
                         LastName = d.LastName,
                         FirstName = d.FirstName,
-                        MiddleName = d.MiddleName
-                    });
+                        MiddleName = d.MiddleName,
+                        AnswerName = a.AnswerType
+                    });*/
 
                 int count0 = 1;
                 foreach (var ds in datausers)

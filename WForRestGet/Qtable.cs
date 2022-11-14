@@ -10,6 +10,7 @@ namespace WForRestGet
     {
         public string AccountName { get; set; }
         public string LeaveName { get; set; }
+        public string AnswerName { get; set; }
         public DateTime? LeaveStart { get; set; }
         public DateTime? LeaveEnd { get; set; }
         public string Uid { get; set; }
