@@ -267,6 +267,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModel\Answer.cs" />
     <Compile Include="DataModel\DataModelContext.cs" />
     <Compile Include="DataModel\Datauser.cs" />
     <Compile Include="DataModel\Leave.cs" />
@@ -279,6 +280,14 @@
     <Compile Include="Migrations\20221111063944_v1.cs" />
     <Compile Include="Migrations\20221111063944_v1.designer.cs">
       <DependentUpon>20221111063944_v1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20221114061058_v2.cs" />
+    <Compile Include="Migrations\20221114061058_v2.designer.cs">
+      <DependentUpon>20221114061058_v2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20221114061452_v3.cs" />
+    <Compile Include="Migrations\20221114061452_v3.designer.cs">
+      <DependentUpon>20221114061452_v3.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DataModelContextModelSnapshot.cs" />
     <Compile Include="Qtable.cs" />

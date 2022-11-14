@@ -21,6 +21,7 @@ namespace WForRestGet.DataModel
 
         public DbSet<Datauser> Datausers { get; set; }
         public DbSet<Leave> Leaves { get; set; }
+        public DbSet<Answer> Answers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -34,6 +35,7 @@ namespace WForRestGet.DataModel
         {
             modelBuilder.ApplyConfiguration(new DatauserConfigurations());
             modelBuilder.ApplyConfiguration(new LeaveConfigurations());
+            modelBuilder.ApplyConfiguration(new AnswerConfigurations());
 
             modelBuilder.Entity<Leave>().HasData(
                 new Leave[]
@@ -43,6 +45,15 @@ namespace WForRestGet.DataModel
                     new Leave() { Id = 3, LeaveType = "BT", LeaveDescription = "командировка"},
                     new Leave() { Id = 4, LeaveType = "DV", LeaveDescription = "декретный отпуск" }
                 });
+            modelBuilder.Entity<Answer>().HasData(
+                new Answer[]
+                {
+                    new Answer() { Id = 1, AnswerType = "AN", AnswerDescription = "Автоответа в Exchange нет" },
+                    new Answer() { Id = 2, AnswerType = "AA", AnswerDescription= "Exception на установку ответа" },
+                    new Answer() { Id = 3, AnswerType = "AG", AnswerDescription = "Автоответ установлен"},
+                    new Answer() { Id = 4, AnswerType = "AU", AnswerDescription = "Автоответ установлен пользователем" }
+                });
+
         }
         private class DatauserConfigurations : IEntityTypeConfiguration<Datauser>
         {
@@ -69,11 +80,15 @@ namespace WForRestGet.DataModel
                 builder.Property(e => e.Phone).HasMaxLength(100);
                 builder.Property(e => e.Email).HasMaxLength(100);
                 builder.Property(e => e.Disabled).HasColumnType("bit");
+                builder.Property(e => e.AnswerId).HasDefaultValue(1);
 
                 builder.HasOne(l => l.Leave)
                     .WithMany(e => e.Datausers)
                     .HasForeignKey(l => l.LeaveId);
 
+                builder.HasOne(l => l.Answer)
+                    .WithMany(e => e.Datausers)
+                    .HasForeignKey(l => l.AnswerId);
             }
         }
         private class LeaveConfigurations : IEntityTypeConfiguration<Leave>
@@ -84,6 +99,17 @@ namespace WForRestGet.DataModel
                 builder.Property(e => e.Id).ValueGeneratedNever();
                 builder.Property(e => e.LeaveType).HasMaxLength(4).IsRequired();
                 builder.Property(e => e.LeaveDescription).HasMaxLength(200).IsRequired();
+
+            }
+        }
+        private class AnswerConfigurations : IEntityTypeConfiguration<Answer>
+        {
+            public void Configure(EntityTypeBuilder<Answer> builder)
+            {
+                builder.HasKey(e => e.Id);
+                builder.Property(e => e.Id).ValueGeneratedNever();
+                builder.Property(e => e.AnswerType).HasMaxLength(4).IsRequired();
+                builder.Property(e => e.AnswerDescription).HasMaxLength(200).IsRequired();
 
             }
         }

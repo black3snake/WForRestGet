@@ -28,5 +28,7 @@ namespace WForRestGet.DataModel
         public string Phone { get; set; }
         public string Email { get; set; }
         public bool Disabled { get; set; }
+        public int? AnswerId { get; set; }
+        public Answer Answer { get; set; }
     }
 }

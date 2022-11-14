@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WForRestGet.DataModel;
 
 namespace WForRestGet.Migrations
 {
     [DbContext(typeof(DataModelContext))]
-    partial class DataModelContextModelSnapshot : ModelSnapshot
+    [Migration("20221114061058_v2")]
+    partial class v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,7 +50,7 @@ namespace WForRestGet.Migrations
                         new
                         {
                             Id = 2,
-                            AnswerDescription = "Exception на установку ответа",
+                            AnswerDescription = "Excaption на установку ответа",
                             AnswerType = "AA"
                         },
                         new
@@ -60,7 +62,7 @@ namespace WForRestGet.Migrations
                         new
                         {
                             Id = 4,
-                            AnswerDescription = "Автоответ установлен пользователем",
+                            AnswerDescription = "АВтоответ установлен пользователем",
                             AnswerType = "AU"
                         });
                 });
