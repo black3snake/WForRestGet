@@ -48,8 +48,8 @@ namespace WForRestGet.DataModel
             modelBuilder.Entity<Answer>().HasData(
                 new Answer[]
                 {
-                    new Answer() { Id = 1, AnswerType = "AN", AnswerDescription = "Автоответа в Exchange нет" },
-                    new Answer() { Id = 2, AnswerType = "AA", AnswerDescription= "Exception на установку ответа" },
+                    new Answer() { Id = 1, AnswerType = "AN", AnswerDescription = "Автоответа статус неизвестен" },
+                    new Answer() { Id = 2, AnswerType = "AA", AnswerDescription = "Exception на установку ответа" },
                     new Answer() { Id = 3, AnswerType = "AG", AnswerDescription = "Автоответ установлен"},
                     new Answer() { Id = 4, AnswerType = "AU", AnswerDescription = "Автоответ установлен пользователем" }
                 });

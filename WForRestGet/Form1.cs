@@ -549,6 +549,17 @@ namespace WForRestGet
             
             foreach (var qt in qtables)
             {
+                // проверим на уже имеющиеся записи
+                using (DataModelContext dbTestAc = new DataModelContext())
+                {
+                    var user1 = dbTestAc.Datausers.FirstOrDefault(u => u.AccountName == qt.AccountName);
+                    if (user1 != null & user1.AnswerId != 3 & user1.AnswerId == 4)
+                    {
+                        continue;
+                    }
+                }
+
+
                 // Структура формирования автоОтвета
                 OutOfOffice ofOffice = new OutOfOffice
                 {
@@ -572,7 +583,7 @@ namespace WForRestGet
                 var httpClient = new HttpClient(handler); //{ Timeout = new TimeSpan(0, 0, 10) };
 */
                 #endregion
-
+                // JSON формирование
                 SetOutOfOffice setOutOf = new SetOutOfOffice()
                 {
                     InternalContent = setStatusUser,
@@ -604,12 +615,41 @@ namespace WForRestGet
                         if(status.Status)
                         {
                             txtBoxConsole.AppendText($"Для {qt.AccountName} добавлен автоматический ответ в почте" + Environment.NewLine);
+                            using (DataModelContext context = new DataModelContext())
+                            {
+                                var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == qt.AccountName);
+                                if(user1 != null)
+                                {
+                                    user1.AnswerId = 3;
+                                    context.SaveChanges();
+                                }
+                            }
+                        } else
+                        {
+                            using (DataModelContext context = new DataModelContext())
+                            {
+                                var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == qt.AccountName);
+                                if (user1 != null)
+                                {
+                                    user1.AnswerId = 2;
+                                    context.SaveChanges();
+                                }
+                            }
                         }
                     }
                     catch (Exception ex)
                     {
                         txtBoxConsole.AppendText($"Исключение: {ex.Message} - попытка N{count}" + Environment.NewLine);
                         await Task.Delay(2000);
+                        using (DataModelContext context = new DataModelContext())
+                        {
+                            var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == qt.AccountName);
+                            if (user1 != null)
+                            {
+                                user1.AnswerId = 2;
+                                context.SaveChanges();
+                            }
+                        }
                     }
                 } while (!sts & count < 3);
                 
