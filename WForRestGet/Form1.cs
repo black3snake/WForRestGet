@@ -535,17 +535,10 @@ namespace WForRestGet
                                     MiddleName = d.MiddleName,
                                     AnswerName = a.AnswerType
                                 };
-
-                var datausers2 = context.Datausers.Join(context.Leaves,
-                    d2 => d2.LeaveId,
-                    l2 => l2.Id,
-                    (d2, l2).Equals).
-                    ;
-                    
-                    
-                    
-                    
-                    /*(d, l) => new Qtable()
+                /*context.Datausers.Join(context.Leaves, 
+                    d => d.LeaveId,
+                    l => l.Id,
+                    (d, l) => new Qtable()
                     {
                         AccountName = d.AccountName,
                         LeaveName = l.LeaveType,
@@ -555,19 +548,13 @@ namespace WForRestGet
                         LastName = d.LastName,
                         FirstName = d.FirstName,
                         MiddleName = d.MiddleName,
-                        AnswerId = d.AnswerId*/
-                    /*}).Join(context.Answers,
-                        d2 => d2.AnswerId,
-                        a => a.Id,
-                        (d2, a) => new Qtable()
-                        {
-                            AnswerName = a.AnswerType
-                        }
+                    });*/
 
-                    ).Se;*/
+
+
 
                 int count0 = 1;
-                foreach (var ds in datausers2)
+                foreach (var ds in datausers)
                 {
                     if (count0 > 2)
                     {
