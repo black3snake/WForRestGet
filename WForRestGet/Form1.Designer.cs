@@ -60,6 +60,8 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnEWS = new System.Windows.Forms.Button();
+            this.txtBoxOP4 = new System.Windows.Forms.TextBox();
             this.panelTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxXclose)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxTitle)).BeginInit();
@@ -285,7 +287,7 @@
             // btnSaveDB
             // 
             this.btnSaveDB.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSaveDB.Location = new System.Drawing.Point(687, 299);
+            this.btnSaveDB.Location = new System.Drawing.Point(687, 288);
             this.btnSaveDB.Name = "btnSaveDB";
             this.btnSaveDB.Size = new System.Drawing.Size(188, 33);
             this.btnSaveDB.TabIndex = 10;
@@ -296,7 +298,7 @@
             // btnExToRims
             // 
             this.btnExToRims.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnExToRims.Location = new System.Drawing.Point(687, 420);
+            this.btnExToRims.Location = new System.Drawing.Point(687, 487);
             this.btnExToRims.Name = "btnExToRims";
             this.btnExToRims.Size = new System.Drawing.Size(188, 33);
             this.btnExToRims.TabIndex = 10;
@@ -319,7 +321,7 @@
             // txtBoxOP2
             // 
             this.txtBoxOP2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtBoxOP2.Location = new System.Drawing.Point(662, 234);
+            this.txtBoxOP2.Location = new System.Drawing.Point(662, 227);
             this.txtBoxOP2.Multiline = true;
             this.txtBoxOP2.Name = "txtBoxOP2";
             this.txtBoxOP2.ReadOnly = true;
@@ -331,7 +333,7 @@
             // txtBoxOP3
             // 
             this.txtBoxOP3.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtBoxOP3.Location = new System.Drawing.Point(662, 352);
+            this.txtBoxOP3.Location = new System.Drawing.Point(662, 425);
             this.txtBoxOP3.Multiline = true;
             this.txtBoxOP3.Name = "txtBoxOP3";
             this.txtBoxOP3.ReadOnly = true;
@@ -372,6 +374,29 @@
             this.toolStripMenuItem2.Size = new System.Drawing.Size(171, 22);
             this.toolStripMenuItem2.Text = "Copy to Clipboard";
             // 
+            // btnEWS
+            // 
+            this.btnEWS.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEWS.Location = new System.Drawing.Point(687, 380);
+            this.btnEWS.Name = "btnEWS";
+            this.btnEWS.Size = new System.Drawing.Size(188, 33);
+            this.btnEWS.TabIndex = 10;
+            this.btnEWS.Text = "EWS Check Status";
+            this.btnEWS.UseVisualStyleBackColor = true;
+            this.btnEWS.Click += new System.EventHandler(this.btnExToRims_Click);
+            // 
+            // txtBoxOP4
+            // 
+            this.txtBoxOP4.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtBoxOP4.Location = new System.Drawing.Point(664, 333);
+            this.txtBoxOP4.Multiline = true;
+            this.txtBoxOP4.Name = "txtBoxOP4";
+            this.txtBoxOP4.ReadOnly = true;
+            this.txtBoxOP4.Size = new System.Drawing.Size(230, 42);
+            this.txtBoxOP4.TabIndex = 12;
+            this.txtBoxOP4.Text = "Получение статуса автоответа пользователей через Microsoft Exchange Web Services " +
+    "(EWS)  и запись их в DBase";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -379,9 +404,11 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(906, 541);
             this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txtBoxOP4);
             this.Controls.Add(this.txtBoxOP3);
             this.Controls.Add(this.txtBoxOP2);
             this.Controls.Add(this.txtBoxOP1);
+            this.Controls.Add(this.btnEWS);
             this.Controls.Add(this.btnExToRims);
             this.Controls.Add(this.btnSaveDB);
             this.Controls.Add(this.btnZRims);
@@ -453,6 +480,8 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.Button btnEWS;
+        private System.Windows.Forms.TextBox txtBoxOP4;
     }
 }
 
