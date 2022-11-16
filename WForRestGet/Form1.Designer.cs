@@ -383,7 +383,7 @@
             this.btnEWS.TabIndex = 10;
             this.btnEWS.Text = "EWS Check Status";
             this.btnEWS.UseVisualStyleBackColor = true;
-            this.btnEWS.Click += new System.EventHandler(this.btnExToRims_Click);
+            this.btnEWS.Click += new System.EventHandler(this.btnEWS_Click);
             // 
             // txtBoxOP4
             // 

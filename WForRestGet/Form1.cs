@@ -14,11 +14,16 @@ using System.Windows.Forms;
 using WForRestGet.DataModel;
 using WForRestGet.Properties;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
+using NLog;
+using System.Diagnostics;
 
 namespace WForRestGet
 {
     public partial class Form1 : Form
     {
+        Logger logger = LogManager.GetCurrentClassLogger();
+        
         Point lastPoint;
         public string sServiceUser { get; set; }
         public string sServicePassword { get; set; }
@@ -493,6 +498,65 @@ namespace WForRestGet
 
         }
 
+        // c EWS не получилось - прав доступа нет :( будем делать через РИМС + PLINQ
+        private void btnEWS_Click(object sender, EventArgs e)
+        {
+            /*if (string.IsNullOrEmpty(txtBLogin.Text) | string.IsNullOrEmpty(txtBPass.Text) | string.IsNullOrEmpty(txtBDomen.Text))
+            {
+                MessageBox.Show("Заполни все поля Login, Password, Domain!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            sServiceUser = txtBLogin.Text.Trim();
+            sServicePassword = txtBPass.Text.Trim();
+            sServiceDomain = txtBDomen.Text.Trim();*/
+
+            List<string> listsID = new List<string>();
+
+            using (DataModelContext context = new DataModelContext())
+            {
+                var listsIdDB = context.Datausers.Select(l => l.AccountName).ToList();
+                foreach (var item in listsIdDB)
+                {
+                    listsID.Add(item);
+                    if (listsID.Count > 100) break;
+                }
+
+            }
+            int threadId = Thread.CurrentThread.ManagedThreadId;
+            txtBoxConsole.AppendText($"Main: запущен в потоке # {threadId}" + Environment.NewLine);
+            logger.Info("Main: запущен");
+
+            Thread.Sleep(2000); 
+
+            ParallelOptions options = new ParallelOptions();
+            // Выделить определенное количество процессорных ядер.
+            //options.MaxDegreeOfParallelism = Environment.ProcessorCount > 4 ? Environment.ProcessorCount - 1 : 1;
+            if (Environment.ProcessorCount > 4)
+                options.MaxDegreeOfParallelism = 10;
+            else
+                options.MaxDegreeOfParallelism = 1;
+
+            txtBoxConsole.AppendText($"Количество логических ядер CPU: {Environment.ProcessorCount}" + Environment.NewLine);
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
+            listsID.AsParallel().WithDegreeOfParallelism(options.MaxDegreeOfParallelism).ForAll(ls => { MyTask(ls); });
+
+            stopwatch.Stop();
+            TimeSpan stopwatchElapsed = stopwatch.Elapsed;
+            var milsec = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
+            txtBoxConsole.AppendText($"Затраченное время в сек: {milsec/1000}\r\n");
+
+            
+            txtBoxConsole.AppendText($"Всего AcountName попавших в обработку: {listsID.Count}");
+            txtBoxConsole.AppendText($"\r\nОсновной поток завершен.");
+
+        }
+
+
+
+
         // Отправка запросов REST POST в РИМС для установки статуса в EXchange
         private async void btnExToRims_Click(object sender, EventArgs e)
         {
@@ -683,5 +747,27 @@ namespace WForRestGet
         }
 
 
+        // Task for Plinq
+        public void MyTask(object arg)
+        {
+            string ak = (string)arg;
+            
+            logger.Info($"MyTask: CurrentId {Task.CurrentId} with ManagedThreadId {Thread.CurrentThread.ManagedThreadId} запущен, ак пользователя {ak}" + Environment.NewLine);
+
+            #region Random
+            var random = new Random();
+            var lowerBound = 2000;
+            var upperBound = 2000;
+            var rNum = random.Next(lowerBound, upperBound);
+            Thread.Sleep(rNum);
+            #endregion
+
+
+            logger.Info($"MyTask: CurrentId {Task.CurrentId} завершен." + Environment.NewLine);
+
+
+        }
+
     }
+
 }
