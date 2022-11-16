@@ -747,7 +747,7 @@ namespace WForRestGet
         }
 
 
-        // Task for Plinq
+        // Task for Plinq.
         public void MyTask(object arg)
         {
             string ak = (string)arg;
