@@ -23,7 +23,7 @@ namespace WForRestGet
     public partial class Form1 : Form
     {
         Logger logger = LogManager.GetCurrentClassLogger();
-        
+
         Point lastPoint;
         public string sServiceUser { get; set; }
         public string sServicePassword { get; set; }
@@ -51,7 +51,7 @@ namespace WForRestGet
         // Структура формирование эл. ответа в Exchange
         struct OutOfOffice
         {
-            public string leaveName { get; set;}
+            public string leaveName { get; set; }
             public DateTime DateStart { get; set; }
             public DateTime DateEnd { get; set; }
             public string DS { get; set; }
@@ -66,13 +66,13 @@ namespace WForRestGet
                 this.DS = "";
                 this.DE = "";
                 this.FIO = FIO;
-            }    
-            
+            }
+
             public string As() {
-                
+
                 DS = DateStart.ToString().Remove(DateStart.ToString().IndexOf(" "));
                 DE = DateEnd.ToString().Remove(DateStart.ToString().IndexOf(" "));
-                
+
                 if (leaveName == "VC")
                 {
                     return leaveName = $"<html><body><b>Добрый день.</b><br> В данный момент я нахожусь в отпуске c {DS} по {DE}<br>    С уважением {FIO}</body></html>";
@@ -94,10 +94,10 @@ namespace WForRestGet
 
             }
         }
-        
 
 
-    public Form1()
+
+        public Form1()
         {
             InitializeComponent();
 
@@ -107,16 +107,16 @@ namespace WForRestGet
             picBoxXclose.Click += (s, a) => { this.Close(); };
 
             panelTop.MouseDown += (s, a) => { lastPoint = new Point(a.X, a.Y); };
-            panelTop.MouseMove += (s, a) => { 
-                if(a.Button == MouseButtons.Left)
+            panelTop.MouseMove += (s, a) => {
+                if (a.Button == MouseButtons.Left)
                 {
                     this.Left += a.X - lastPoint.X;
                     this.Top += a.Y - lastPoint.Y;
                 }
             };
-           
+
             #region ListView - Инициализация
-           
+
             ColumnHeader header1, header2, header3, header4, header5, header6;
             header1 = new ColumnHeader();  // 
             header2 = new ColumnHeader();
@@ -136,11 +136,11 @@ namespace WForRestGet
             header3.Text = "City";
             header3.TextAlign = HorizontalAlignment.Left;
             header3.Width = 110;
-            
+
             header4.Text = "LT";
             header4.TextAlign = HorizontalAlignment.Left;
             header4.Width = 110;
-            
+
             header5.Text = "LStart";
             header5.TextAlign = HorizontalAlignment.Left;
             header5.Width = 70;
@@ -169,7 +169,7 @@ namespace WForRestGet
                 }
             };
 
-            toolStripMenuItem1.Click +=(s, a) => {
+            toolStripMenuItem1.Click += (s, a) => {
                 foreach (ListViewItem item in listView1.Items)
                 {
                     item.Selected = true;
@@ -241,7 +241,7 @@ namespace WForRestGet
 
             //txtBoxConsole.AppendText(result + Environment.NewLine);
             //Console.WriteLine(result);
-            if(response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 txtBoxConsole.AppendText($"Статус проверки REST Get: {response.ReasonPhrase}" + Environment.NewLine);
                 picBoxTestRIMS.BackgroundImage = Resources.Ok_27007;
@@ -271,15 +271,15 @@ namespace WForRestGet
 
 
                 txtBoxConsole.AppendText($"Quantity items in DB Datausers: {countDD}" + Environment.NewLine);
-                
-                if(countDL > 0)
+
+                if (countDL > 0)
                 {
                     picBoxTestDB.BackgroundImage = Resources.Ok_27007;
                     statusDBTest = true;
                 } else
                 {
                     picBoxTestDB.BackgroundImage = Resources.Close_2_26986;
-                    statusDBTest= false;
+                    statusDBTest = false;
                 }
             }
 
@@ -319,12 +319,12 @@ namespace WForRestGet
         // Заберем данные с РИМС
         private async void btnZRims_Click(object sender, EventArgs e)
         {
-            if(!statusRimsTest)
+            if (!statusRimsTest)
             {
                 MessageBox.Show("Нажми на кнопку Test RIMS\r\nПроверь Логин и Пароль\r\n Проверь связь", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            
+
             sServiceUser = txtBLogin.Text.Trim();
             sServicePassword = txtBPass.Text.Trim();
             sServiceDomain = txtBDomen.Text.Trim();
@@ -352,7 +352,7 @@ namespace WForRestGet
             foreach (var item in statusL)
             {
                 count++;
-                if ( (count % 100) == 0)
+                if ((count % 100) == 0)
                 {
                     txtBoxConsole.AppendText($"..{(int)count}");
                 }
@@ -370,14 +370,14 @@ namespace WForRestGet
                         break;
                     }
                 }*/
-                
+
                 //viewItem.SubItems.Add(LeaveType);
                 #endregion
                 viewItem.SubItems.Add(DLeaveType[item.LeaveType]);
                 viewItem.SubItems.Add(item.LeaveStart.ToString().Remove(item.LeaveStart.ToString().IndexOf(" ")));
                 viewItem.SubItems.Add(item.LeaveEnd.ToString().Remove(item.LeaveEnd.ToString().IndexOf(" ")));
                 listView1.Items.Add(viewItem);
-               
+
                 Datauser userObject = new Datauser()
                 {
                     FimSyncKey = item.FimSyncKey,
@@ -399,7 +399,7 @@ namespace WForRestGet
                     Phone = item.Phone?.Count() > 100 ? item.Phone.Substring(99) : item.Phone,
                     Email = item.Email?.Count() > 100 ? item.Email.Substring(99) : item.Email,
                     Disabled = item.DisabledDomain
-                    
+
                 };
                 Datauserslist.Add(userObject);
 
@@ -414,8 +414,8 @@ namespace WForRestGet
         // Save in DataBase
         private void btnSaveDB_Click(object sender, EventArgs e)
         {
-            if (!statusDBTest & listView1.Items.Count<1)
-            { 
+            if (!statusDBTest & listView1.Items.Count < 1)
+            {
                 MessageBox.Show("Нажми на кнопку Test DB\r\nИ убедись , что появилась зеленая галочка\r\nПроверь связь", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -431,7 +431,7 @@ namespace WForRestGet
             using (DataModelContext context = new DataModelContext())
             {
 
-                if(count_db > 1000)
+                if (count_db > 1000)
                 {
                     foreach (var item in Datauserslist)
                     {
@@ -458,7 +458,7 @@ namespace WForRestGet
                             context.Datausers.Add(item);
                             context.SaveChanges();
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             context.Datausers.Update(item);
                             //MessageBox.Show(ex.Message, "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -514,7 +514,7 @@ namespace WForRestGet
 
             using (DataModelContext context = new DataModelContext())
             {
-                var listsIdDB = context.Datausers.Select(l => l.AccountName).ToList();
+                var listsIdDB = context.Datausers.Where(l => l.AnswerId != 4).Select(l => l.AccountName).ToList();
                 foreach (var item in listsIdDB)
                 {
                     listsID.Add(item);
@@ -526,13 +526,13 @@ namespace WForRestGet
             txtBoxConsole.AppendText($"Main: запущен в потоке # {threadId}" + Environment.NewLine);
             logger.Info("Main: запущен");
 
-            Thread.Sleep(2000); 
+            Thread.Sleep(1000);
 
             ParallelOptions options = new ParallelOptions();
             // Выделить определенное количество процессорных ядер.
             //options.MaxDegreeOfParallelism = Environment.ProcessorCount > 4 ? Environment.ProcessorCount - 1 : 1;
             if (Environment.ProcessorCount > 4)
-                options.MaxDegreeOfParallelism = 10;
+                options.MaxDegreeOfParallelism = Environment.ProcessorCount < 10 ? 4 : 10;
             else
                 options.MaxDegreeOfParallelism = 1;
 
@@ -540,17 +540,19 @@ namespace WForRestGet
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            
+
             listsID.AsParallel().WithDegreeOfParallelism(options.MaxDegreeOfParallelism).ForAll(ls => { MyTask(ls); });
 
             stopwatch.Stop();
             TimeSpan stopwatchElapsed = stopwatch.Elapsed;
             var milsec = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
-            txtBoxConsole.AppendText($"Затраченное время в сек: {milsec/1000}\r\n");
 
-            
+            txtBoxConsole.AppendText($"Затраченное время в сек: {milsec / 1000}\r\n");
             txtBoxConsole.AppendText($"Всего AcountName попавших в обработку: {listsID.Count}");
             txtBoxConsole.AppendText($"\r\nОсновной поток завершен.");
+            logger.Info($"Затраченное время на обработку получения Статуса пользователей из РИМСа в сек: {milsec / 1000}");
+            logger.Info($"Всего AcountName попавших в обработку: {listsID.Count}");
+            logger.Info($"Основной поток завершен.");
 
         }
 
@@ -569,7 +571,7 @@ namespace WForRestGet
             sServiceUser = txtBLogin.Text.Trim();
             sServicePassword = txtBPass.Text.Trim();
             sServiceDomain = txtBDomen.Text.Trim();
-            
+
             List<Qtable> qtables = new List<Qtable>();
             var uri = new Uri("https://kraz-s-rims01.hq.root.ad/api/Exchange/SetOutOfOffice");
 
@@ -620,15 +622,14 @@ namespace WForRestGet
                 int count0 = 1;
                 foreach (var ds in datausers)
                 {
-                    if (count0 > 2)
-                    {
-                        break;
-                    }
+                    // для проверки только 2 записи
+                    if (count0 > 2) break;
+
                     qtables.Add(ds);
                     count0++;
                 }
             }
-            
+
             foreach (var qt in qtables)
             {
                 // проверим на уже имеющиеся записи
@@ -694,13 +695,13 @@ namespace WForRestGet
                         var status = JsonConvert.DeserializeObject<SetOutOffResult>(json);
                         txtBoxConsole.AppendText($"Статус добавления: {status.Status} Message:{status.Message}" + Environment.NewLine);
                         sts = status.Status;
-                        if(status.Status)
+                        if (status.Status)
                         {
                             txtBoxConsole.AppendText($"Для {qt.AccountName} добавлен автоматический ответ в почте" + Environment.NewLine);
                             using (DataModelContext context = new DataModelContext())
                             {
                                 var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == qt.AccountName);
-                                if(user1 != null)
+                                if (user1 != null)
                                 {
                                     user1.AnswerId = 3;
                                     context.SaveChanges();
@@ -734,7 +735,7 @@ namespace WForRestGet
                         }
                     }
                 } while (!sts & count < 3);
-                
+
 
             }
 
@@ -751,22 +752,79 @@ namespace WForRestGet
         public void MyTask(object arg)
         {
             string ak = (string)arg;
-            
+
             logger.Info($"MyTask: CurrentId {Task.CurrentId} with ManagedThreadId {Thread.CurrentThread.ManagedThreadId} запущен, ак пользователя {ak}" + Environment.NewLine);
 
             #region Random
-            var random = new Random();
+            /*var random = new Random();
             var lowerBound = 2000;
             var upperBound = 2000;
             var rNum = random.Next(lowerBound, upperBound);
-            Thread.Sleep(rNum);
+            Thread.Sleep(rNum);*/
             #endregion
 
+            Task<bool> state = GetOutState(ak);
+
+            state.Wait();
+            
 
             logger.Info($"MyTask: CurrentId {Task.CurrentId} завершен." + Environment.NewLine);
 
 
         }
+
+        public async Task<bool> GetOutState(string acount) {
+        
+            #region RIMS отправка запроса POST и запись в Базу Данных стутуса 4 если включен автоответ пользователем
+            sServiceUser = txtBLogin.Text.Trim();
+            sServicePassword = txtBPass.Text.Trim();
+            sServiceDomain = txtBDomen.Text.Trim();
+            // NTLM Secured URL
+            var uri = new Uri("https://kraz-s-rims01.hq.root.ad/api/Exchange/GetOutOfOffice");
+            // Create a new Credential
+            var credentialsCache = new CredentialCache();
+            credentialsCache.Add(uri, "NTLM", new NetworkCredential(
+                sServiceUser, sServicePassword, sServiceDomain));
+            var handler = new HttpClientHandler() { Credentials = credentialsCache, PreAuthenticate = true };
+            var httpClient = new HttpClient(handler) { Timeout = new TimeSpan(0, 0, 30) };
+
+            GetOutOfOffice getOutOf = new GetOutOfOffice()
+            {
+                Account = acount
+            };
+            var content = JsonConvert.SerializeObject(getOutOf);
+            var data = new StringContent(content, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync(uri, data);
+
+
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            var status = JsonConvert.DeserializeObject<GetOutOfResult>(json);
+            logger.Info($"Статус проверки: CurrentId:{Task.CurrentId}, ManagedThreadId:{Thread.CurrentThread.ManagedThreadId}");
+            logger.Info($"Статус автоответа {acount}: {status.Data.Enabled} DateS&E:{status.Data?.DateStart}-{status.Data?.DateEnd} ");
+
+            if(status.Data.Enabled)
+            {
+                using (DataModelContext context = new DataModelContext())
+                {
+                    var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == acount);
+                    if (user1 != null)
+                    {
+                        user1.AnswerId = 4;
+                        context.SaveChanges();
+                    }
+                }
+            }
+
+
+
+            return status.Data.Enabled;
+            
+            #endregion
+
+        
+        }
+
 
     }
 

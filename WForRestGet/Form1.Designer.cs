@@ -287,7 +287,7 @@
             // btnSaveDB
             // 
             this.btnSaveDB.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSaveDB.Location = new System.Drawing.Point(687, 288);
+            this.btnSaveDB.Location = new System.Drawing.Point(687, 280);
             this.btnSaveDB.Name = "btnSaveDB";
             this.btnSaveDB.Size = new System.Drawing.Size(188, 33);
             this.btnSaveDB.TabIndex = 10;
@@ -321,7 +321,7 @@
             // txtBoxOP2
             // 
             this.txtBoxOP2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtBoxOP2.Location = new System.Drawing.Point(662, 227);
+            this.txtBoxOP2.Location = new System.Drawing.Point(662, 221);
             this.txtBoxOP2.Multiline = true;
             this.txtBoxOP2.Name = "txtBoxOP2";
             this.txtBoxOP2.ReadOnly = true;
@@ -381,21 +381,21 @@
             this.btnEWS.Name = "btnEWS";
             this.btnEWS.Size = new System.Drawing.Size(188, 33);
             this.btnEWS.TabIndex = 10;
-            this.btnEWS.Text = "EWS Check Status";
+            this.btnEWS.Text = "Check Status";
             this.btnEWS.UseVisualStyleBackColor = true;
             this.btnEWS.Click += new System.EventHandler(this.btnEWS_Click);
             // 
             // txtBoxOP4
             // 
             this.txtBoxOP4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtBoxOP4.Location = new System.Drawing.Point(664, 333);
+            this.txtBoxOP4.Location = new System.Drawing.Point(662, 319);
             this.txtBoxOP4.Multiline = true;
             this.txtBoxOP4.Name = "txtBoxOP4";
             this.txtBoxOP4.ReadOnly = true;
-            this.txtBoxOP4.Size = new System.Drawing.Size(230, 42);
+            this.txtBoxOP4.Size = new System.Drawing.Size(230, 56);
             this.txtBoxOP4.TabIndex = 12;
-            this.txtBoxOP4.Text = "Получение статуса автоответа пользователей через Microsoft Exchange Web Services " +
-    "(EWS)  и запись их в DBase";
+            this.txtBoxOP4.Text = "Получение статуса автоответа пользователей в Microsoft Exchange через RIMS, если " +
+    "пользователь сам установил его. Мы его сохраним. Используем многопоточность";
             // 
             // Form1
             // 

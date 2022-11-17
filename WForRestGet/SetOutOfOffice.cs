@@ -36,4 +36,19 @@ namespace WForRestGet
 
     }
 
+    public class GetOutOfResult
+    {
+        public bool Status { get; set; }
+        public string Message { get; set; }
+        public Data Data { get; set; }
+    }
+    public class Data
+    {
+        public bool Enabled { get; set; }
+        public DateTime DateStart { get; set; }
+        public DateTime DateEnd { get; set; }
+        public string InternalContent { get; set; }
+        public string ExternalContent { get; set; }
+
+    }
 }
