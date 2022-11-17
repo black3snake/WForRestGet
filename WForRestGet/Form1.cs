@@ -501,14 +501,11 @@ namespace WForRestGet
         // c EWS не получилось - прав доступа нет :( будем делать через РИМС + PLINQ
         private void btnEWS_Click(object sender, EventArgs e)
         {
-            /*if (string.IsNullOrEmpty(txtBLogin.Text) | string.IsNullOrEmpty(txtBPass.Text) | string.IsNullOrEmpty(txtBDomen.Text))
+            if (string.IsNullOrEmpty(txtBLogin.Text) | string.IsNullOrEmpty(txtBPass.Text) | string.IsNullOrEmpty(txtBDomen.Text))
             {
                 MessageBox.Show("Заполни все поля Login, Password, Domain!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            sServiceUser = txtBLogin.Text.Trim();
-            sServicePassword = txtBPass.Text.Trim();
-            sServiceDomain = txtBDomen.Text.Trim();*/
 
             List<string> listsID = new List<string>();
 
@@ -518,7 +515,7 @@ namespace WForRestGet
                 foreach (var item in listsIdDB)
                 {
                     listsID.Add(item);
-                    if (listsID.Count > 100) break;
+                    //if (listsID.Count > 10) break;   // Ограничение на Внесение стутуса 3 кнопка
                 }
 
             }
@@ -532,7 +529,7 @@ namespace WForRestGet
             // Выделить определенное количество процессорных ядер.
             //options.MaxDegreeOfParallelism = Environment.ProcessorCount > 4 ? Environment.ProcessorCount - 1 : 1;
             if (Environment.ProcessorCount > 4)
-                options.MaxDegreeOfParallelism = Environment.ProcessorCount < 10 ? 4 : 10;
+                options.MaxDegreeOfParallelism = Environment.ProcessorCount < 10 ? 4 : 5;
             else
                 options.MaxDegreeOfParallelism = 1;
 
@@ -749,7 +746,7 @@ namespace WForRestGet
 
 
         // Task for Plinq.
-        public void MyTask(object arg)
+        public async void MyTask(object arg)
         {
             string ak = (string)arg;
 
@@ -763,9 +760,9 @@ namespace WForRestGet
             Thread.Sleep(rNum);*/
             #endregion
 
-            Task<bool> state = GetOutState(ak);
+            await GetOutState(ak);
 
-            state.Wait();
+            //state.Wait();
             
 
             logger.Info($"MyTask: CurrentId {Task.CurrentId} завершен." + Environment.NewLine);
@@ -773,7 +770,7 @@ namespace WForRestGet
 
         }
 
-        public async Task<bool> GetOutState(string acount) {
+        public async Task GetOutState(string acount) {
         
             #region RIMS отправка запроса POST и запись в Базу Данных стутуса 4 если включен автоответ пользователем
             sServiceUser = txtBLogin.Text.Trim();
@@ -790,7 +787,8 @@ namespace WForRestGet
 
             GetOutOfOffice getOutOf = new GetOutOfOffice()
             {
-                Account = acount
+                Account = acount,
+                Domain = "IE.CORP"
             };
             var content = JsonConvert.SerializeObject(getOutOf);
             var data = new StringContent(content, Encoding.UTF8, "application/json");
@@ -812,20 +810,18 @@ namespace WForRestGet
                     {
                         user1.AnswerId = 4;
                         context.SaveChanges();
+                        logger.Info($"Статус автоответа {acount}: 4 и он прописан в DB");
                     }
                 }
             }
 
 
 
-            return status.Data.Enabled;
             
             #endregion
 
         
         }
-
-
     }
 
 }

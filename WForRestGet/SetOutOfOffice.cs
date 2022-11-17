@@ -31,7 +31,7 @@ namespace WForRestGet
 
     public class GetOutOfOffice
     {
-        public string Domain = "IE.CORP";
+        public string Domain { get; set; }
         public string Account { get; set; }
 
     }
