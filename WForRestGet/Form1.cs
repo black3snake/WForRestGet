@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using NLog;
 using System.Diagnostics;
+using System.IO;
 
 namespace WForRestGet
 {
@@ -515,7 +516,7 @@ namespace WForRestGet
                 foreach (var item in listsIdDB)
                 {
                     listsID.Add(item);
-                    //if (listsID.Count > 10) break;   // Ограничение на Внесение стутуса 3 кнопка
+                    //if (listsID.Count > 40) break;   // Ограничение на Внесение стутуса 3 кнопка
                 }
 
             }
@@ -543,13 +544,23 @@ namespace WForRestGet
             stopwatch.Stop();
             TimeSpan stopwatchElapsed = stopwatch.Elapsed;
             var milsec = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
+            var sec = milsec / 1000;
+            var ts = TimeSpan.FromSeconds(sec);
 
-            txtBoxConsole.AppendText($"Затраченное время в сек: {milsec / 1000}\r\n");
+            txtBoxConsole.AppendText($"Затраченное время: {ts.Hours}ч:{ts.Minutes}м:{ts.Seconds}с\r\n");
             txtBoxConsole.AppendText($"Всего AcountName попавших в обработку: {listsID.Count}");
             txtBoxConsole.AppendText($"\r\nОсновной поток завершен.");
-            logger.Info($"Затраченное время на обработку получения Статуса пользователей из РИМСа в сек: {milsec / 1000}");
+            logger.Info($"Затраченное время на обработку получения Статуса пользователей из РИМСа: {ts.Hours}ч:{ts.Minutes}м:{ts.Seconds}с");
             logger.Info($"Всего AcountName попавших в обработку: {listsID.Count}");
             logger.Info($"Основной поток завершен.");
+
+            using (DataModelContext contextC = new DataModelContext())
+            {
+                var listsC = contextC.Datausers.Where(l => l.AnswerId == 4).ToList();
+                txtBoxConsole.AppendText($"Итого добавлено {listsC.Count()} меток в DBase о наличии пользовательских автоответов, которые мы сохраним" + Environment.NewLine);
+            }
+
+
 
         }
 
@@ -746,7 +757,7 @@ namespace WForRestGet
 
 
         // Task for Plinq.
-        public async void MyTask(object arg)
+        public void MyTask(object arg)
         {
             string ak = (string)arg;
 
@@ -760,16 +771,18 @@ namespace WForRestGet
             Thread.Sleep(rNum);*/
             #endregion
 
-            await GetOutState(ak);
+            //Task state = GetOutState(ak);   // пока притормозим
+            GetOutState2(ak);
 
-            //state.Wait();
-            
+            //state.Wait(20000);
+
 
             logger.Info($"MyTask: CurrentId {Task.CurrentId} завершен." + Environment.NewLine);
 
 
         }
 
+        // Первая
         public async Task GetOutState(string acount) {
         
             #region RIMS отправка запроса POST и запись в Базу Данных стутуса 4 если включен автоответ пользователем
@@ -792,36 +805,124 @@ namespace WForRestGet
             };
             var content = JsonConvert.SerializeObject(getOutOf);
             var data = new StringContent(content, Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync(uri, data);
+            var response = await httpClient.PostAsync(uri, data);  //await
 
 
             response.EnsureSuccessStatusCode();
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync();   //await
             var status = JsonConvert.DeserializeObject<GetOutOfResult>(json);
             logger.Info($"Статус проверки: CurrentId:{Task.CurrentId}, ManagedThreadId:{Thread.CurrentThread.ManagedThreadId}");
-            logger.Info($"Статус автоответа {acount}: {status.Data.Enabled} DateS&E:{status.Data?.DateStart}-{status.Data?.DateEnd} ");
-
-            if(status.Data.Enabled)
+            try
             {
-                using (DataModelContext context = new DataModelContext())
+                logger.Info($"Статус автоответа {acount}: {status.Data?.Enabled} DateS&E:{status.Data?.DateStart}-{status.Data?.DateEnd} ");
+                bool? stE = status.Data?.Enabled;
+                if (stE.HasValue)
                 {
-                    var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == acount);
-                    if (user1 != null)
+                    using (DataModelContext context = new DataModelContext())
                     {
-                        user1.AnswerId = 4;
-                        context.SaveChanges();
-                        logger.Info($"Статус автоответа {acount}: 4 и он прописан в DB");
+                        var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == acount);
+                        if (user1 != null)
+                        {
+                            user1.AnswerId = 4;
+                            context.SaveChanges();
+                            logger.Info($"Статус автоответа {acount}: 4 и он прописан в DB");
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                logger.Info($"Статус автоответа {acount}: Data Exception");
 
-
-
-            
+            }
             #endregion
-
+           return;
         
         }
+
+        // Вторая версия доступа к RIMS в потоках
+        public void GetOutState2(string acount)
+        {
+            sServiceUser = txtBLogin.Text.Trim();
+            sServicePassword = txtBPass.Text.Trim();
+            sServiceDomain = txtBDomen.Text.Trim();
+            //string url = $"{adressRims}/api/ActiveDirectory/CheckExistsGroup";
+            // NTLM Secured URL
+            var uri = new Uri("https://kraz-s-rims01.hq.root.ad/api/Exchange/GetOutOfOffice");
+
+            var httpRequest = (HttpWebRequest)WebRequest.Create(uri);
+            httpRequest.Timeout = 30000;
+            httpRequest.Method = "POST";
+            httpRequest.Accept = "application/json";
+
+            if (!string.IsNullOrEmpty(sServiceUser) & !string.IsNullOrEmpty(sServicePassword))
+            {
+                NetworkCredential credential =
+                    new NetworkCredential(sServiceUser, sServicePassword, sServiceDomain);
+                httpRequest.Credentials = credential;
+            }
+            else
+            {
+                httpRequest.UseDefaultCredentials = true;
+            }
+            httpRequest.ContentType = "application/json";
+
+            GetOutOfOffice getOutOf = new GetOutOfOffice()
+            {
+                Account = acount,
+                Domain = "IE.CORP"
+            };
+
+            string jsonz = JsonConvert.SerializeObject(getOutOf);
+            using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
+            {
+                streamWriter.Write(jsonz);
+            }
+            //await Task.Delay(2000);
+            try
+            {
+                var result = "";
+                var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    result = streamReader.ReadToEnd();
+                }
+
+                //Console.WriteLine(httpResponse.StatusCode);
+                //Console.WriteLine(result);
+                var status = JsonConvert.DeserializeObject<GetOutOfResult>(result);
+
+                logger.Info($"Статус проверки: CurrentId:{Task.CurrentId}, ManagedThreadId:{Thread.CurrentThread.ManagedThreadId}");
+                logger.Info($"Статус автоответа {acount}: {status.Data?.Enabled} DateS&E:{status.Data?.DateStart}-{status.Data?.DateEnd} ");
+                
+                bool? stE = status.Data?.Enabled;
+                if (stE.HasValue) {
+                    if(stE.Value)
+                    {
+                        using (DataModelContext context = new DataModelContext())
+                        {
+                            var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == acount);
+                            if (user1 != null)
+                            {
+                                user1.AnswerId = 4;
+                                context.SaveChanges();
+                                logger.Info($"Статус автоответа {acount}: 4 и он прописан в DB");
+                            }
+                        }
+
+
+                    }
+                
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"CurrentId:{Task.CurrentId}: " + ex.Message + Environment.NewLine);
+            }
+            //return groupID_tmp;
+        }
+
     }
 
 }
