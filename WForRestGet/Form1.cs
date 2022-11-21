@@ -301,6 +301,15 @@ namespace WForRestGet
             {
                 var listsC = status4.Datausers.Where(l => l.AnswerId == 4).ToList();
                 txtBoxConsole.AppendText($"Пользователей со своим установленным статусом автоответа: {listsC.Count()}" + Environment.NewLine);
+
+
+                // проверим на Null и при нахождении заменим на 1
+                var listsNull = status4.Datausers.Where(l => l.AnswerId == null).ToList();
+                foreach (var item in listsNull)
+                {
+                    item.AnswerId = 1;
+                    status4.SaveChanges();
+                }
             }
 
         }
@@ -404,7 +413,8 @@ namespace WForRestGet
                     City = item.City?.Count() > 100 ? item.City.Substring(99) : item.City,
                     Phone = item.Phone?.Count() > 100 ? item.Phone.Substring(99) : item.Phone,
                     Email = item.Email?.Count() > 100 ? item.Email.Substring(99) : item.Email,
-                    Disabled = item.DisabledDomain
+                    Disabled = item.DisabledDomain,
+                    AnswerId = 1
 
                 };
                 Datauserslist.Add(userObject);
@@ -449,7 +459,7 @@ namespace WForRestGet
                             context.Datausers.Update(item);
                             context.SaveChanges();
                         }
-                        catch (Exception ex)
+                        catch 
                         {
                             context.Datausers.Add(item);
                             //MessageBox.Show(ex.Message, "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -467,7 +477,7 @@ namespace WForRestGet
                             context.Datausers.Add(item);
                             context.SaveChanges();
                         }
-                        catch (Exception ex)
+                        catch 
                         {
                             context.Datausers.Update(item);
                             //MessageBox.Show(ex.Message, "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -644,7 +654,7 @@ namespace WForRestGet
                 foreach (var ds in datausers)
                 {
                     // для проверки только 2 записи
-                    if (count0 > 2) break;
+                    if (count0 > 100) break;
 
                     qtables.Add(ds);
                     count0++;
@@ -654,14 +664,21 @@ namespace WForRestGet
             foreach (var qt in qtables)
             {
                 // проверим на уже имеющиеся записи
-                using (DataModelContext dbTestAc = new DataModelContext())
+                if(qt.AnswerName == "AU" )
+                {
+                    continue;
+                }
+                
+                /*using (DataModelContext dbTestAc = new DataModelContext())
                 {
                     var user1 = dbTestAc.Datausers.FirstOrDefault(u => u.AccountName == qt.AccountName);
                     if (user1 != null & user1.AnswerId != 3 & user1.AnswerId == 4)
                     {
                         continue;
                     }
-                }
+                }*/
+
+
 
 
                 // Структура формирования автоОтвета
@@ -841,7 +858,7 @@ namespace WForRestGet
             }
             catch (Exception ex)
             {
-                logger.Info($"Статус автоответа {acount}: Data Exception");
+                logger.Info($"Статус автоответа {acount}: Data Exception {ex.Message}");
 
             }
             #endregion
