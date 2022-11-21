@@ -297,6 +297,11 @@ namespace WForRestGet
                 txtBoxConsole.AppendText($"Quantity olds: {usersOld.Count}" + Environment.NewLine);
             }
 
+            using (DataModelContext status4 = new DataModelContext())
+            {
+                var listsC = status4.Datausers.Where(l => l.AnswerId == 4).ToList();
+                txtBoxConsole.AppendText($"Пользователей со своим установленным статусом автоответа: {listsC.Count()}" + Environment.NewLine);
+            }
 
         }
 
@@ -428,6 +433,9 @@ namespace WForRestGet
                 count_db = lists.LongCount();
             }
 
+            txtBoxConsole.AppendText($"Начинаем запись в Базу данных..." + Environment.NewLine);
+            Stopwatch stopwatchBD = new Stopwatch();
+            stopwatchBD.Start();
 
             using (DataModelContext context = new DataModelContext())
             {
@@ -468,6 +476,13 @@ namespace WForRestGet
                     }
 
                 }
+                stopwatchBD.Stop();
+                TimeSpan stopwatchElapsed = stopwatchBD.Elapsed;
+                var milsec = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
+                var sec = milsec / 1000;
+                var ts = TimeSpan.FromSeconds(sec);
+                txtBoxConsole.AppendText($"На запись ушло времени: {ts.Hours}ч:{ts.Minutes}м:{ts.Seconds}с\r\n");
+
 
                 #region AddRange List no work AddAndUpdate
                 /*try
@@ -535,6 +550,7 @@ namespace WForRestGet
                 options.MaxDegreeOfParallelism = 1;
 
             txtBoxConsole.AppendText($"Количество логических ядер CPU: {Environment.ProcessorCount}" + Environment.NewLine);
+            txtBoxConsole.AppendText($"Будем использовать: {options.MaxDegreeOfParallelism} потоков " + Environment.NewLine);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -548,8 +564,8 @@ namespace WForRestGet
             var ts = TimeSpan.FromSeconds(sec);
 
             txtBoxConsole.AppendText($"Затраченное время: {ts.Hours}ч:{ts.Minutes}м:{ts.Seconds}с\r\n");
-            txtBoxConsole.AppendText($"Всего AcountName попавших в обработку: {listsID.Count}");
-            txtBoxConsole.AppendText($"\r\nОсновной поток завершен.");
+            txtBoxConsole.AppendText($"Всего AcountName попавших в обработку: {listsID.Count}\r\n");
+            txtBoxConsole.AppendText($"Основной поток завершен.\r\n");
             logger.Info($"Затраченное время на обработку получения Статуса пользователей из РИМСа: {ts.Hours}ч:{ts.Minutes}м:{ts.Seconds}с");
             logger.Info($"Всего AcountName попавших в обработку: {listsID.Count}");
             logger.Info($"Основной поток завершен.");
@@ -557,15 +573,12 @@ namespace WForRestGet
             using (DataModelContext contextC = new DataModelContext())
             {
                 var listsC = contextC.Datausers.Where(l => l.AnswerId == 4).ToList();
-                txtBoxConsole.AppendText($"Итого добавлено {listsC.Count()} меток в DBase о наличии пользовательских автоответов, которые мы сохраним" + Environment.NewLine);
+                txtBoxConsole.AppendText($"Итого добавлено {listsC.Count()} статусов в DBase о наличии пользовательских автоответов, которые мы сохраним" + Environment.NewLine);
             }
 
 
 
         }
-
-
-
 
         // Отправка запросов REST POST в РИМС для установки статуса в EXchange
         private async void btnExToRims_Click(object sender, EventArgs e)
@@ -756,6 +769,8 @@ namespace WForRestGet
         }
 
 
+
+        #region Методы по получению Статуса из РИМС
         // Task for Plinq.
         public void MyTask(object arg)
         {
@@ -770,16 +785,10 @@ namespace WForRestGet
             var rNum = random.Next(lowerBound, upperBound);
             Thread.Sleep(rNum);*/
             #endregion
-
-            //Task state = GetOutState(ak);   // пока притормозим
+            //Task state = GetOutState(ak);   // пока притормозим асинхрон
             GetOutState2(ak);
 
-            //state.Wait(20000);
-
-
             logger.Info($"MyTask: CurrentId {Task.CurrentId} завершен." + Environment.NewLine);
-
-
         }
 
         // Первая
@@ -878,7 +887,6 @@ namespace WForRestGet
             {
                 streamWriter.Write(jsonz);
             }
-            //await Task.Delay(2000);
             try
             {
                 var result = "";
@@ -922,6 +930,14 @@ namespace WForRestGet
             }
             //return groupID_tmp;
         }
+
+        #endregion
+
+
+        #region Методы по установке автоответа в многопоточном варианте
+
+
+        #endregion
 
     }
 
