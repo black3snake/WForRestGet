@@ -23,7 +23,7 @@ namespace WForRestGet
 {
     public partial class Form1 : Form
     {
-        private Logger logger = LogManager.GetCurrentClassLogger();
+        Logger logger = LogManager.GetCurrentClassLogger();
 
         Point lastPoint;
         public string sServiceUser { get; set; }
@@ -547,7 +547,7 @@ namespace WForRestGet
             }
             int threadId = Thread.CurrentThread.ManagedThreadId;
             txtBoxConsole.AppendText($"Main: запущен в потоке # {threadId}" + Environment.NewLine);
-            logger.Info($"Main: запущен потоке: {threadId}");
+            logger.Info("Main: запущен");
 
             Thread.Sleep(1000);
 
@@ -560,7 +560,7 @@ namespace WForRestGet
                 options.MaxDegreeOfParallelism = 1;
 
             txtBoxConsole.AppendText($"Количество логических ядер CPU: {Environment.ProcessorCount}" + Environment.NewLine);
-            txtBoxConsole.AppendText($"Будем использовать: {options.MaxDegreeOfParallelism} потоков" + Environment.NewLine);
+            txtBoxConsole.AppendText($"Будем использовать: {options.MaxDegreeOfParallelism} потоков " + Environment.NewLine);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -591,19 +591,19 @@ namespace WForRestGet
         }
 
         // Отправка запросов REST POST в РИМС для установки статуса в EXchange
-        private void btnExToRims_Click(object sender, EventArgs e)
+        private async void btnExToRims_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtBLogin.Text) | string.IsNullOrEmpty(txtBPass.Text) | string.IsNullOrEmpty(txtBDomen.Text)) {
                 MessageBox.Show("Заполни все поля Login, Password, Domain!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            List<Qtable> qtables = new List<Qtable>();
             #region start for RIMS
-            /*sServiceUser = txtBLogin.Text.Trim();
+            sServiceUser = txtBLogin.Text.Trim();
             sServicePassword = txtBPass.Text.Trim();
             sServiceDomain = txtBDomen.Text.Trim();
 
+            List<Qtable> qtables = new List<Qtable>();
             var uri = new Uri("https://kraz-s-rims01.hq.root.ad/api/Exchange/SetOutOfOffice");
 
             var credentialsCache = new CredentialCache();
@@ -611,7 +611,7 @@ namespace WForRestGet
                 sServiceUser, sServicePassword, sServiceDomain));
 
             var handler = new HttpClientHandler() { Credentials = credentialsCache, PreAuthenticate = true };
-            var httpClient = new HttpClient(handler) { Timeout = new TimeSpan(0, 0, 30) };*/
+            var httpClient = new HttpClient(handler) { Timeout = new TimeSpan(0, 0, 30) };
             #endregion
 
             // Join new table
@@ -654,48 +654,14 @@ namespace WForRestGet
                 foreach (var ds in datausers)
                 {
                     // для проверки только 2 записи
-                    //if (count0 > 100) break;
+                    if (count0 > 100) break;
 
                     qtables.Add(ds);
                     count0++;
                 }
             }
 
-            // Ограничение по core
-            ParallelOptions options = new ParallelOptions();
-            if (Environment.ProcessorCount > 4)
-                options.MaxDegreeOfParallelism = Environment.ProcessorCount < 10 ? 4 : 5;
-            else
-                options.MaxDegreeOfParallelism = 1;
-
-            
-            txtBoxConsole.AppendText($"Начинаем запись статусов для пользователей в Exchange: {DateTime.Now}\r\n");
-            txtBoxConsole.AppendText($"Количество используемых потоков: {options.MaxDegreeOfParallelism}.\r\n");
-            logger.Info($"\r\n !!!! -------- Начинаем запись статусов для пользователей в Exchange ------------!!!!:{DateTime.Now}");
-            logger.Info($"Количество используемых потоков: {options.MaxDegreeOfParallelism}.");
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            qtables.Where(q => q.AnswerName != "AU").AsParallel().WithDegreeOfParallelism(options.MaxDegreeOfParallelism).ForAll(q => { MyTaskSet(q);});
-
-            stopwatch.Stop();
-            TimeSpan stopwatchElapsed = stopwatch.Elapsed;
-            var milsec = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
-            var sec = milsec / 1000;
-            var ts = TimeSpan.FromSeconds(sec);
-
-            txtBoxConsole.AppendText($"Затраченное время: {ts.Hours}ч:{ts.Minutes}м:{ts.Seconds}с\r\n");
-            txtBoxConsole.AppendText($"Всего пользователей попавших в обработку: {qtables.Count}\r\n");
-            txtBoxConsole.AppendText($"Основной поток завершен.{DateTime.Now}\r\n");
-            logger.Info($"Затраченное время: {ts.Hours}ч:{ts.Minutes}м:{ts.Seconds}с");
-            logger.Info($"Всего пользователей попавших в обработку: {qtables.Count}");
-            logger.Info($"Основной поток завершен.{DateTime.Now}");
-
-
-            // old 
-            #region OLD запрос в 1 поток
-
-            /*foreach (var qt in qtables)
+            foreach (var qt in qtables)
             {
                 // проверим на уже имеющиеся записи
                 if(qt.AnswerName == "AU" )
@@ -703,14 +669,14 @@ namespace WForRestGet
                     continue;
                 }
                 
-                *//*using (DataModelContext dbTestAc = new DataModelContext())
+                /*using (DataModelContext dbTestAc = new DataModelContext())
                 {
                     var user1 = dbTestAc.Datausers.FirstOrDefault(u => u.AccountName == qt.AccountName);
                     if (user1 != null & user1.AnswerId != 3 & user1.AnswerId == 4)
                     {
-                        continue ;
+                        continue;
                     }
-                }*//*
+                }*/
 
 
 
@@ -730,13 +696,13 @@ namespace WForRestGet
                 // REST POST
                 //var uri = new Uri("https://kraz-s-rims01.hq.root.ad/api/Exchange/SetOutOfOffice");
                 // Create a new Credential
-                *//*var credentialsCache = new CredentialCache();
+                /*var credentialsCache = new CredentialCache();
                 credentialsCache.Add(uri, "NTLM", new NetworkCredential(
                     sServiceUser, sServicePassword, sServiceDomain));
 
                 var handler = new HttpClientHandler() { Credentials = credentialsCache, PreAuthenticate = true };
                 var httpClient = new HttpClient(handler); //{ Timeout = new TimeSpan(0, 0, 10) };
-*//*
+*/
                 #endregion
                 // JSON формирование
                 SetOutOfOffice setOutOf = new SetOutOfOffice()
@@ -809,9 +775,12 @@ namespace WForRestGet
                 } while (!sts & count < 3);
 
                 logger.Info($"Пользователю {qt.AccountName} прописан автоответ: {sts} ");
-            }*/
+            }
 
-            #endregion
+
+
+
+
 
 
         }
@@ -966,6 +935,7 @@ namespace WForRestGet
                             }
                         }
 
+
                     }
                 
                 }
@@ -973,7 +943,7 @@ namespace WForRestGet
             }
             catch (Exception ex)
             {
-                logger.Info($"CurrentId:{Task.CurrentId}: " + ex.Message);
+                logger.Info($"CurrentId:{Task.CurrentId}: " + ex.Message + Environment.NewLine);
             }
             //return groupID_tmp;
         }
@@ -982,123 +952,7 @@ namespace WForRestGet
 
 
         #region Методы по установке автоответа в многопоточном варианте
-        public void MyTaskSet(object arg)
-        {
-            Qtable qtable = (Qtable)arg;
 
-            sServiceUser = txtBLogin.Text.Trim();
-            sServicePassword = txtBPass.Text.Trim();
-            sServiceDomain = txtBDomen.Text.Trim();
-            var uri = new Uri("https://kraz-s-rims01.hq.root.ad/api/Exchange/SetOutOfOffice");
-
-            var httpRequest = (HttpWebRequest)WebRequest.Create(uri);
-            httpRequest.Timeout = 30000;
-            httpRequest.Method = "POST";
-            httpRequest.Accept = "application/json";
-
-            if (!string.IsNullOrEmpty(sServiceUser) & !string.IsNullOrEmpty(sServicePassword))
-            {
-                NetworkCredential credential =
-                    new NetworkCredential(sServiceUser, sServicePassword, sServiceDomain);
-                httpRequest.Credentials = credential;
-            }
-            else
-            {
-                httpRequest.UseDefaultCredentials = true;
-            }
-            httpRequest.ContentType = "application/json";
-
-
-            // Структура формирования автоОтвета
-            OutOfOffice ofOffice = new OutOfOffice
-            {
-                leaveName = qtable.LeaveName,
-                DateStart = (DateTime)qtable.LeaveStart,
-                DateEnd = (DateTime)qtable.LeaveEnd,
-                FIO = $"{qtable.LastName} {qtable.FirstName} {qtable.MiddleName}"
-            };
-            logger.Info($"Автоответ для пользователя: {ofOffice.As()}");
-            string setStatusUser = ofOffice.As();
-
-            // JSON формирование
-            SetOutOfOffice setOutOf = new SetOutOfOffice()
-            {
-                InternalContent = setStatusUser,
-                ExternalContent = setStatusUser,
-                DateStart = (DateTime)qtable.LeaveStart,
-                DateEnd = (DateTime)qtable.LeaveEnd,
-                Uid = qtable.Uid,
-                Account = qtable.AccountName,
-                Disable = false
-
-            };
-
-            string jsonz = JsonConvert.SerializeObject(setOutOf);
-            using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
-            {
-                streamWriter.Write(jsonz);
-            }
-
-            // проверочный статус
-            bool sts = false;
-            int count = 0;
-            do {
-                try
-                {
-                    count++;
-                    var result = "";
-                    var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-                    {
-                        result = streamReader.ReadToEnd();
-                    }
-
-                    var status = JsonConvert.DeserializeObject<SetOutOffResult>(result);
-                    sts = status.Status;
-                    if (status.Status)
-                    {
-                        //logger.Info($"Для {qtable.AccountName} добавлен автоматический ответ в почте" + Environment.NewLine);
-                        using (DataModelContext context = new DataModelContext())
-                        {
-                            var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == qtable.AccountName);
-                            if (user1 != null & user1.AnswerId != 3)
-                            {
-                                user1.AnswerId = 3;
-                                context.SaveChanges();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (DataModelContext context = new DataModelContext())
-                        {
-                            var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == qtable.AccountName);
-                            if (user1 != null & user1.AnswerId != 2)
-                            {
-                                user1.AnswerId = 2;
-                                context.SaveChanges();
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.Info($"Исключение: {ex.Message} - попытка N{count} для пользователя {qtable.AccountName}. CurrentId {Task.CurrentId}, ManagedThreadId:{Thread.CurrentThread.ManagedThreadId}");
-                    using (DataModelContext context = new DataModelContext())
-                    {
-                        var user1 = context.Datausers.FirstOrDefault(u => u.AccountName == qtable.AccountName);
-                        if (user1 != null & user1.AnswerId != 2)
-                        {
-                            user1.AnswerId = 2;
-                            context.SaveChanges();
-                        }
-                    }
-                }
-            } while (!sts & count < 3);
-
-            logger.Info($"Пользователю {qtable.AccountName} прописан автоответ: {sts}.");
-            logger.Info($"MyTaskSet: CurrentId {Task.CurrentId}, ManagedThreadId:{Thread.CurrentThread.ManagedThreadId} завершен.");
-        }
 
         #endregion
 
